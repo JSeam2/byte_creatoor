@@ -37,8 +37,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     let duration = start.elapsed();
 
     println!(
-        "{} bytes written to: {:?} in {}ms",
+        "{} bytes (buffer size = {}) written to: {:?} in {}ms",
         cli.num_bytes,
+        cli.buffer_size,
         path,
         duration.as_millis()
     );
