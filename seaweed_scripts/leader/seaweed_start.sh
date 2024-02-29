@@ -2,13 +2,20 @@
 
 # start the master node
 
-sudo /mnt/lv/seaweed/weed \
+sudo mkdir -p ./seaweed/log/master
+sudo mkdir -p ./seaweed/log/filer
+sudo mkdir -p ./seaweed/log/volume
+sudo mkdir -p ./seaweed/metadata
+sudo mkdir -p ./seaweed/volume
+
+
+sudo weed \
     -logdir=./seaweed/log/master master \
-    -ip=192.168.0.2 \
+    -ip=<replace with master server ip> \
     -port=9333 \
     -port.grpc=19333 \
     -mdir=./seaweed/metadata \
-    -defaultReplication=002 \
+    -defaultReplication=001 \
     -ip.bind=0.0.0.0 \
     -volumePreallocate \
     -volumeSizeLimitMB 500000 \
@@ -20,9 +27,9 @@ sleep 5
 
 # start the filer
 
-sudo /mnt/lv/seaweed/weed \
+sudo weed \
     -logdir=./seaweed/log/filer filer \
-    -master=192.168.0.2:9333 \
+    -master=<replace with master server ip>:9333 \
     -ip.bind=0.0.0.0 \
     -port=8888 \
     -port.grpc=18888 \
@@ -32,9 +39,9 @@ sudo /mnt/lv/seaweed/weed \
 
 # start the volume server
 
-sudo /mnt/lv/seaweed/weed \
+sudo weed \
     -logdir=./seaweed/log/volume volume \
-    -mserver=192.168.0.2:9333 \
+    -mserver=<replace with master server ip>:9333 \
     -ip.bind=0.0.0.0 \
     -port=8080 \
     -port.grpc=18080 \

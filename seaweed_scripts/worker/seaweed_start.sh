@@ -1,12 +1,13 @@
 #!/bin/sh
 
+mkdir -p ./seaweed/log/volume
 mkdir -p ./seaweed/volume
 
 # start the volume server
 
-sudo /mnt/lv/seaweed/weed \
+sudo weed \
     -logdir=./seaweed/log/volume volume \
-    -mserver=192.168.0.2:9333 \
+    -mserver=0.0.0.0:9333 \
     -ip.bind=0.0.0.0 \
     -port=8080 \
     -port.grpc=18080 \
