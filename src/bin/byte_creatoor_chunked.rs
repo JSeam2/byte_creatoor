@@ -38,7 +38,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let path = Path::new(&cli.path);
 
     let pre_save_hash = sha256::digest(bytes.clone());
-    println!("file hash: {}", pre_save_hash);
+    println!("pre-save file hash: {}", pre_save_hash);
 
     let mut file = File::create(&path)?;
     let mut buf_writer = std::io::BufWriter::with_capacity(cli.buffer_size, &mut file);
@@ -49,13 +49,16 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
     let duration = start.elapsed();
 
-    let file = File::create(&path)?;
+    drop(buf_writer);
+    drop(file);
+
+    let file = File::open(&path)?;
     let mut reader = std::io::BufReader::new(&file);
     let mut post_save_bytes = vec![0u8; cli.num_bytes];
     reader.read_exact(&mut post_save_bytes)?;
 
     let post_save_hash = sha256::digest(post_save_bytes);
-    println!("file hash: {}", post_save_hash);
+    println!("post-save file hash: {}", post_save_hash);
     assert_eq!(pre_save_hash, post_save_hash);
 
     println!(
