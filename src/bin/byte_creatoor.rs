@@ -1,4 +1,10 @@
-use std::{error::Error, fs::File, io::Write, path::Path, time::Instant};
+use std::{
+    error::Error,
+    fs::File,
+    io::{Read, Write},
+    path::Path,
+    time::Instant,
+};
 
 use clap::{arg, Parser};
 use rand::RngCore;
@@ -32,9 +38,21 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut file = File::create(&path)?;
     let mut buf_writer = std::io::BufWriter::with_capacity(cli.buffer_size, &mut file);
 
+    let pre_save_hash = sha256::digest(bytes.clone());
+    println!("file hash: {}", pre_save_hash);
+
     let start = Instant::now();
     buf_writer.write_all(&bytes)?;
     let duration = start.elapsed();
+
+    let file = File::create(&path)?;
+    let mut reader = std::io::BufReader::new(&file);
+    let mut post_save_bytes = vec![0u8; cli.num_bytes];
+    reader.read_exact(&mut post_save_bytes)?;
+
+    let post_save_hash = sha256::digest(post_save_bytes);
+    println!("file hash: {}", post_save_hash);
+    assert_eq!(pre_save_hash, post_save_hash);
 
     println!(
         "{} bytes (buffer size = {}) written to: {:?} in {}ms",
