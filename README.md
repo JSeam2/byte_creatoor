@@ -13,7 +13,7 @@ cargo install --path ./
 Make sure to replace `<replace with master server ip>` with the master server ip that you have hosted.
 Ideally, the leader and worker node should be on different machines.
 
-3. Run `./write_loop.sh ./mount/file` and write into the seaweed mounted folder.
+3. Run `./write_loop.sh ./mount/file` and write into the seaweed mounted folder. Or run `./write_loop_chunked.sh ./mount/file` to write files via chunks.
 
 # Recorded SeaweedFS Perfomance Results
 The leader node and worker node are hosted on the same VLAN and have SSDs setup. [Link to results](https://docs.google.com/spreadsheets/d/1CsI-g4rr4uvJy_cNNqsViEDLh89l-E3P4bhyFsMTZPY/edit?usp=sharing)
