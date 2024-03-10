@@ -19,6 +19,8 @@ pub struct ByteCommands {
     pub num_bytes: usize,
     #[arg(short = 'b', long, default_value = "8000")]
     pub buffer_size: usize,
+    #[arg(short = 'c', long, default_value = "8000")]
+    pub chunk_size: usize,
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -35,14 +37,16 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let path = Path::new(&cli.path);
 
-    let mut file = File::create(&path)?;
-    let mut buf_writer = std::io::BufWriter::with_capacity(cli.buffer_size, &mut file);
-
     let pre_save_hash = sha256::digest(bytes.clone());
     println!("pre-save file hash: {}", pre_save_hash);
 
+    let mut file = File::create(&path)?;
+    let mut buf_writer = std::io::BufWriter::with_capacity(cli.buffer_size, &mut file);
+
     let start = Instant::now();
-    buf_writer.write_all(&bytes)?;
+    for chunk in bytes.chunks(cli.chunk_size) {
+        buf_writer.write_all(chunk)?;
+    }
     let duration = start.elapsed();
 
     drop(buf_writer);
@@ -58,9 +62,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     assert_eq!(pre_save_hash, post_save_hash);
 
     println!(
-        "{} bytes (buffer size = {}) written to: {:?} in {}ms",
+        "{} bytes (buffer size = {}, chunk size = {}) written to: {:?} in {}ms",
         cli.num_bytes,
         cli.buffer_size,
+        cli.chunk_size,
         path,
         duration.as_millis()
     );
